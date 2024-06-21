@@ -1,5 +1,4 @@
 node_modules/
 public/*.js
-package-lock.json
 .github_backup/
 
