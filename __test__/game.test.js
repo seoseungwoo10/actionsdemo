@@ -1,13 +1,24 @@
 const Game = require('../src/game').default
 const fs = require('fs')
 
+/**
+ * 주석 처리된 코드는
+ * fs.readFile 함수가 비동기적으로 파일을 읽는 동안 Jest가 테스트를 너무 일찍 종료하려고 시도하기 때문입니다.
+ * Jest는 기본적으로 각 테스트에 대해 5초의 타임아웃을 설정합니다.
+ * done 콜백을 사용하면 비동기 작업이 완료될 때까지 Jest에게 기다리라고 지시할 수 있지만,
+ * 파일 읽기 작업이 5초 이상 걸리면 타임아웃 오류가 발생
+ */
 describe('App', () => {
-  it('Contains the compiled JavaScript', async (done) => {
-    fs.readFile('./public/main.js', 'utf8', (err, data) => {
-      expect(err).toBe(null)
-      expect(data).toMatchSnapshot()
-      done()
-    })
+  it('Contains the compiled JavaScript', async () => {
+  /*
+      fs.readFile('./public/main.js', 'utf8', (err, data) => {
+        expect(err).toBeNull()
+        expect(data).toMatchSnapshot()
+        done()
+      })
+  */
+    const data = await fs.promises.readFile('./public/main.js', 'utf8') // async/await 사용
+    expect(data).toMatchSnapshot()
   })
 })
 
