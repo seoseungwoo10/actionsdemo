@@ -23,9 +23,10 @@ describe('App', () => {
     const data = await fs.promises.readFile('./public/main.js', 'utf8') // async/await 사용
     if (isCI) {
       expect(data).toBeDefined()
-    } else {
-      //expect(data).toMatchSnapshot()
     }
+    // else {
+    //   expect(data).toMatchSnapshot()
+    // }
   })
 })
 
