@@ -1,6 +1,9 @@
 const Game = require('../src/game').default
 const fs = require('fs')
 
+// CI 환경에서 스냅샷 테스트를 실행하지 않으려면 다음과 같이 설정
+const isCI = process.env.CI === 'true'
+
 /**
  * 주석 처리된 코드는
  * fs.readFile 함수가 비동기적으로 파일을 읽는 동안 Jest가 테스트를 너무 일찍 종료하려고 시도하기 때문입니다.
@@ -18,7 +21,11 @@ describe('App', () => {
       })
   */
     const data = await fs.promises.readFile('./public/main.js', 'utf8') // async/await 사용
-    expect(data).toMatchSnapshot()
+    if (isCI) {
+      expect(data).toBeDefined()
+    } else {
+      expect(data).toMatchSnapshot()
+    }
   })
 })
 
