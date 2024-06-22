@@ -176,3 +176,65 @@ jobs:
       if: matrix.node-version == '16.x'
       run: npm run test
 ```
+
+## build와 test를 분리 후 병렬로 실행하기
+
+```yml
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        node-version: [16.x, 18.x, 20.x]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      - name: Install dependencies ${{ matrix.node-version }}
+        run: npm ci
+      - name: Build ${{ matrix.node-version }}
+        if: matrix.node-version == '18.x' || matrix.node-version == '20.x'
+        run: npm run build --if-present
+        env:
+          NODE_OPTIONS: "--openssl-legacy-provider"
+      - name: Build ${{ matrix.node-version }}
+        if: matrix.node-version == '16.x'
+        run: npm run build --if-present
+      - uses: actions/upload-artifact@v4
+        with:
+          name: webpack artifacts ${{ matrix.os }} ${{ matrix.node-version }}
+          path: public/
+  test:
+    needs: build
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        node-version: [16.x, 18.x, 20.x]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: webpack artifacts ${{ matrix.os }} ${{ matrix.node-version }}
+          path: public/
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      - name: Install dependencies ${{ matrix.node-version }}
+        run: npm ci
+      - name: Run tests ${{ matrix.node-version }}
+        if: matrix.node-version == '18.x' || matrix.node-version == '20.x'
+        run: npm run test
+        env:
+          NODE_OPTIONS: "--openssl-legacy-provider"
+      - name: Run tests ${{ matrix.node-version }}
+        if: matrix.node-version == '16.x'
+        run: npm run test
+```
