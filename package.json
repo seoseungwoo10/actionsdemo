@@ -11,12 +11,9 @@
     "node": "16 || 18"
   },
   "scripts": {
-    "build:16": "npx webpack --config ./src/webpack.config.js --mode production",
-    "dev:16": "npx webpack --config ./src/webpack.config.js --mode development --watch",
-    "test:16": "npx standard && npx jest",
-    "build:18": "cross-env NODE_OPTIONS=--openssl-legacy-provider npx webpack --config ./src/webpack.config.js --mode production",
-    "dev:18": "set NODE_OPTIONS=--openssl-legacy-provider npx webpack --config ./src/webpack.config.js --mode development --watch",
-    "test:18": "set NODE_OPTIONS=--openssl-legacy-provider npx standard && npx jest"
+    "build": "npx webpack --config ./src/webpack.config.js --mode production",
+    "dev": "npx webpack --config ./src/webpack.config.js --mode development --watch",
+    "test": "npx standard && npx jest"
   },
   "author": "githubtraining",
   "license": "MIT",

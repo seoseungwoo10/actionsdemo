@@ -78,7 +78,7 @@ jobs:
 ```
 
 
-## yml 파일에 환경변수로 설정하기
+## yml 파일에 node 버전별 환경변수로 설정하기
 
 
 ```config
@@ -113,14 +113,16 @@ jobs:
     - name: Install dependencies ${{ matrix.node-version }}
       run: npm ci
     - name: Build ${{ matrix.node-version }}
-      run: npm run build:16 --if-present
+      run: npm run build --if-present
     - name: Run tests ${{ matrix.node-version }}
-      run: npm run test:16
+      run: npm run test
   build-node-18:
+    env:
+      NODE_OPTIONS: "--openssl-legacy-provider"    
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest]
-        node-version: [16.x]
+        node-version: [18.x]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -132,7 +134,45 @@ jobs:
       - name: Install dependencies ${{ matrix.node-version }}
         run: npm ci
       - name: Build ${{ matrix.node-version }}
-        run: npm run build:18 --if-present
+        run: npm run build --if-present
       - name: Run tests ${{ matrix.node-version }}
-        run: npm run test:18
+        run: npm run test
+```
+
+### if 조건절을 이용하여 환경변수 설정하기
+
+```yml
+
+jobs:
+  build-node:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        node-version: [16.x, 18.x]
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v4
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    - name: Install dependencies ${{ matrix.node-version }}
+      run: npm ci
+    - name: Build ${{ matrix.node-version }}
+      if: matrix.node-version == '18.x'
+      run: npm run build --if-present
+      env:
+        NODE_OPTIONS: "--openssl-legacy-provider"
+    - name: Run tests ${{ matrix.node-version }}
+      if: matrix.node-version == '18.x'      
+      run: npm run test
+      env:
+        NODE_OPTIONS: "--openssl-legacy-provider"      
+    - name: Build ${{ matrix.node-version }}
+      if: matrix.node-version == '16.x'      
+      run: npm run build --if-present
+    - name: Run tests ${{ matrix.node-version }}
+      if: matrix.node-version == '16.x'
+      run: npm run test
 ```
