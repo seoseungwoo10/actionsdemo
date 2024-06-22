@@ -16,8 +16,8 @@ jobs:
       UPDATE_SNAPSHOT: true
     strategy:
       matrix:
-        node-version: [14.13.1, 16.x, 18.x]
-        # @babel/core=7.18.6은 14.13.1 이상을 지원함.
+        node-version: [16.x, 18.x]
+        # @babel/core=7.18.6
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
     steps:
     - uses: actions/checkout@v4
